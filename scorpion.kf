@@ -1,0 +1,91 @@
+
+; Scorpion
+;
+;	+-------+-------+
+;	|		|		|
+;	|  eat	|  arm	|
+;	|		|		|
+;	+-------+-------+-------+
+;			|		|		|
+;			| brain	| tail  |
+;			|		|		|
+;	+-------+-------+-------+
+;	|		|		|
+;	|  eat	|  arm	|
+;	|		|		|
+;	+-------+-------+
+;
+;	Rotates towards threats?
+
+main:
+{
+	1 NEAREST 2NEGATE 2DUP
+	OMOVE POP
+	OMOVE POP
+	1 NEAREST 2NEGATE
+	OMOVE POP
+	brain CALL
+}
+
+brain:
+{
+	0  1 GROW -1 = arm IF
+	0 -1 GROW -1 = arm IF
+	1  0 GROW -1 = tail IF
+	RECV 1 = brainwait IF ; Wait for tail to reproduce
+	1 NEAREST 2NEGATE OMOVE POP
+	2 NEAREST OMOVE POP
+	4 NEAREST OMOVE POP
+	RECV 1 = brainwait IF ; Wait for tail to reproduce
+	1 ?LOOP
+}
+
+brainwait:
+{
+	0  1 GROW -1 = arm IF
+	0 -1 GROW -1 = arm IF
+	1  0 GROW -1 = tail IF
+	7 NEAREST EAT POP
+	RECV 2 <> ?LOOP	; Done reproducing
+}
+
+arm:
+{
+	-1 0 GROW -1 = eater IF
+	7 NEAREST EAT
+	2+ ?LOOP
+}
+
+tail:
+{
+	7 NEAREST EAT POP
+	5 7 NEAREST2 OR NOT
+	7 NEAREST EAT POP
+	ENERGY 5 > AND reprod IF
+	7 NEAREST EAT
+	2+ ?LOOP
+}
+
+reprod:
+{
+	1 BROADCAST
+	7 NEAREST EAT ;Wait for brain
+	7 NEAREST EAT
+	7 NEAREST EAT
+	7 NEAREST EAT
+	PACK4 POP
+	1 NEAREST EAT POP
+	7 NEAREST 2NEGATE OMOVE POP
+	1 0 1 MAKE-SPORE POP
+	1 NEAREST EAT POP
+	1 0 ENERGY 2 / MAKE-SPORE POP
+	-1 0 OMOVE POP
+	7 NEAREST EAT POP
+	2 BROADCAST
+}
+
+eater:
+{
+	7 NEAREST EAT
+	2+ ?LOOP
+}

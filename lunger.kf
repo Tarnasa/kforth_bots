@@ -1,0 +1,158 @@
+
+;
+; Lunger
+;
+; This creatures uses precise timing to make
+; quick lunging attacks and move back quickly
+;
+
+main:
+{
+	1 NEAREST 2NEGATE OMOVE POP
+	1  0 GROW -1 = rstart IF
+	-1 0 GROW -1 = lstart IF
+	0 -1 GROW -1 = tstart IF
+	0  1 GROW -1 = bstart IF
+	; Die, so that it can be remade with
+	; proper step-order
+}
+
+rstart:
+{
+	0 -1 GROW -1 = trstart IF
+	0  1 GROW -1 = brstart IF
+	7 NEAREST EAT
+	7 NEAREST EAT
+	2POP
+	7 NEAREST EAT
+	7 NEAREST EAT
+	2POP
+	rloop CALL
+}
+lstart:
+{
+	0 -1 GROW -1 = tlstart IF
+	0  1 GROW -1 = blstart IF
+	7 NEAREST EAT
+	7 NEAREST EAT
+	2POP
+	lloop CALL
+}
+tstart:
+{
+	7 NEAREST EAT
+	7 NEAREST EAT
+	2POP
+	0 -1 GROW -1 = centerstart IF
+	tloop CALL
+}
+bstart:
+{
+	7 NEAREST EAT
+	7 NEAREST EAT
+	2POP
+	bloop CALL
+}
+
+trstart:
+{
+	7 NEAREST EAT
+	7 NEAREST EAT
+	2POP
+	1 NEAREST 2NEGATE 2DUP
+	OMOVE POP
+	OMOVE POP
+	7 NEAREST EAT POP
+	413 POP
+	trloop CALL
+}
+brstart:
+{
+	7 NEAREST EAT
+	7 NEAREST EAT
+	2POP
+	7 NEAREST EAT
+	7 NEAREST EAT
+	2POP
+	brloop CALL
+}
+tlstart:
+{
+	7 NEAREST EAT
+	7 NEAREST EAT
+	2POP
+	7 NEAREST EAT
+	7 NEAREST EAT
+	2POP
+	tlloop CALL
+}
+blstart:
+{
+	7 NEAREST EAT
+	7 NEAREST EAT
+	2POP
+	blloop CALL
+}
+centerstart:
+{
+	center CALL
+}
+
+center:
+{
+	0  1
+	0 -1
+	OMOVE POP
+	OMOVE POP
+	1 NEAREST 2NEGATE OMOVE POP
+	6 NEAREST OMOVE POP
+	1  0
+	-1 0
+	OMOVE POP
+	OMOVE POP
+	7 NEAREST OMOVE POP
+	-1 0
+	1  0
+	OMOVE POP
+	OMOVE POP
+	1 NEAREST 2NEGATE OMOVE POP
+	0 -1
+	0  1
+	OMOVE POP
+	OMOVE POP
+	1 NEAREST 2DUP
+	PACK2 BROADCAST
+	2DUP 2DUP
+	
+	1  0 GROW -1 = rstart IF
+	-1 0 GROW -1 = lstart IF
+	0 -1 GROW -1 = tstart IF
+	0  1 GROW -1 = bstart IF
+	1 NEAREST 2NEGATE OMOVE POP
+	EAT POP	; NULL
+	1 ?LOOP
+}
+
+rloop:
+{
+	1 1
+	1 1
+	EAT POP
+	EAT POP
+	7 NEAREST EAT
+	7 NEAREST EAT
+	2POP
+	1 0
+	1 0
+	EAT POP
+	EAT POP
+	1 0 ENERGY 4
+	/ 1
+	0 1
+	1 0 EAT POP
+	MAKE-SPORE POP MAKE-SPORE pop
+	
+	
+	
+	
+}

@@ -1,0 +1,114 @@
+
+; Scorpion V2
+;
+;	+-------+-------+ - - - +  -  - +
+;	|		|		|		'		'
+;	|  eat	|  arm	|  eat	' brain	'
+;	|		|		|		'		'
+;	+-------+-------+-------+ - - - +
+;			|		|		|		'
+;			| brain	| tail  |  eat	'
+;			|		|		|		'
+;	+-------+-------+-------+ - - - +
+;	|		|		|		'		'
+;	|  eat	|  arm	|  eat	' brain	'
+;	|		|		|		'		'
+;	+-------+-------+ - - - +  -  - +
+;
+; Similar to the gonad, but smaller
+; likes to keep its distance
+; Once it reaches a state where can no loner reproduce,
+;  the tail will create eaters
+; If the scorpion is somehow able to reagin enough energy,
+;  the tail will produce a new brain, which will
+;  'restart' the organism
+
+main:
+{
+	1 NEAREST 2NEGATE 2DUP
+	OMOVE POP
+	OMOVE POP
+	1 NEAREST 2NEGATE
+	OMOVE POP
+	brain CALL
+}
+
+brain:
+{
+	0  1 GROW -1 = arm IF
+	0 -1 GROW -1 = arm IF
+	1  0 GROW -1 = tail IF
+	RECV 1 = brainwait IF ; Wait for tail to reproduce
+	1 NEAREST 2NEGATE OMOVE POP
+	2 NEAREST OMOVE POP
+	4 NEAREST OMOVE POP
+	RECV 1 = brainwait IF ; Wait for tail to reproduce
+	1 ?LOOP
+}
+
+brainwait:
+{
+	0  1 GROW -1 = arm IF
+	0 -1 GROW -1 = arm IF
+	1  0 GROW -1 = tail IF
+	7 NEAREST EAT POP
+	RECV 2 <> ?LOOP	; Done reproducing
+}
+
+arm:
+{
+	-1 0 GROW -1 = eater IF
+	7 NEAREST EAT
+	2+ ?LOOP
+}
+
+tail:
+{
+	7 NEAREST EAT POP
+	5 7 NEAREST2 OR NOT
+	7 NEAREST EAT POP
+	ENERGY 5 > AND reprod IF
+	7 NEAREST EAT
+	2+ ?LOOP
+}
+
+tailold:
+{
+	1  0 GROW -1 = eater IF
+	0  1 GROW -1 = eater IF
+	0 -1 GROW -1 = eater IF
+	2 BROADCAST
+	ENERGY 20 >
+	{
+		1  1 GROW -1 = brain IF
+		1 -1 GROW -1 = brain IF
+	}
+	IF
+	7 NEAREST EAT
+	2+ ?LOOP
+}
+
+reprod:
+{
+	1 BROADCAST
+	7 NEAREST EAT ;Wait for brain
+	7 NEAREST EAT
+	7 NEAREST EAT
+	7 NEAREST EAT
+	PACK4 POP
+	ENERGY 7 < tailold IF
+	1 NEAREST EAT POP
+	7 NEAREST 2NEGATE OMOVE POP
+	1 0 1 MAKE-SPORE POP
+	1 NEAREST EAT POP
+	1 0 ENERGY 2 / MAKE-SPORE POP
+	-1 0 OMOVE POP
+	7 NEAREST EAT POP
+	2 BROADCAST
+}
+
+eater:
+{
+	7 NEAREST EAT
+	2+ ?LOOP
+}

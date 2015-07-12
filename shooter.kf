@@ -1,0 +1,118 @@
+main:
+{
+	ENERGY 1 = bullet IF
+	alpha CALL
+}
+
+alpha:
+{
+	1  0 GROW -1 = beta IF
+	-1 0 GROW -1 = epsilon IF
+	6 NEAREST
+	2DUP OR NOT walk IF
+	1 ?LOOP
+}
+
+walk:
+{
+	R0 2+ SIGN
+	R1 1- SIGN
+	2DUP R0! R1!
+	walkloop CALL
+}
+
+walkloop:
+{
+	2DUP OMOVE
+	6 NEAREST OR NOT
+	AND ?LOOP 2POP
+}
+
+beta:
+{
+	0  1 GROW -1 = gamma IF
+	0 -1 GROW -1 = gamma IF
+	shooter CALL
+	1 ?LOOP
+}
+
+gamma:
+{
+	-1 0 GROW -1 = delta IF
+	shooter CALL
+	1 ?LOOP
+}
+
+delta:
+{
+	-1 0 GROW -1 = epsilon IF
+	shooter CALL
+	1 ?LOOP
+}
+
+epsilon:
+{
+	shooter CALL
+	1 ?LOOP
+}
+
+shooter:
+{
+	0 R0!
+	ENERGY 20 < eater IF
+	15 NEAREST
+	EAT POP
+	1 NEAREST
+	2DUP OR shoot IF
+	2POP
+	R3 1+ DUP R3!
+	999 >
+	15 NEAREST
+	EAT POP
+	ENERGY 50 >
+	AND reprod IF
+}
+
+shoot:
+{
+	2DUP 2DUP 1
+	MAKE-SPORE
+	2/
+	MAKE-SPORE
+	POP
+}
+
+eater:
+{
+	R0 1+ R0!
+	15 NEAREST
+	EAT POP
+	R0 50 < ?LOOP
+}
+
+reprod:
+{
+	8 NEAREST
+	2DUP 2DUP
+	ENERGY 4 /
+	MAKE-SPORE
+	2/
+	MAKE-SPORE
+	POP
+	2NEGATE 2DUP
+	OMOVE POP OMOVE POP
+}
+
+;
+; Bullet state
+
+bullet:
+{
+	1 NEAREST 2NEGATE
+	run CALL
+}
+
+run:
+{
+	2DUP 2DUP EAT POP OMOVE POP 1 ?LOOP
+}
